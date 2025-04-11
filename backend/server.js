@@ -1,215 +1,144 @@
-////////////////////////////////////
-//  1) Imports & Env Setup
-////////////////////////////////////
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { Sequelize, DataTypes } from 'sequelize';
+import mysql from 'mysql2/promise';
 
-dotenv.config();  // Load variables from .env
-
-////////////////////////////////////
-//  2) Database (Sequelize + MySQL)
-////////////////////////////////////
-const sequelize = new Sequelize(
-  process.env.DB_NAME,     // e.g., "therapy_platform"
-  process.env.DB_USER,     // e.g., "root"
-  process.env.DB_PASSWORD, // e.g., "your_mysql_password_here"
-  {
-    host: process.env.DB_HOST || 'localhost',
-    dialect: 'mysql',
-  }
-);
-
-// Optional: Test DB connection
-sequelize.authenticate()
-  .then(() => console.log('Database connected...'))
-  .catch(err => console.error('DB connection error:', err));
+dotenv.config();
 
 ////////////////////////////////////
-//  3) Define Models
+//  1) MySQL Connection Pool
 ////////////////////////////////////
-
-// Appointments Model
-const Appointment = sequelize.define('Appointment', {
-  specialistId: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  date: {
-    type: DataTypes.DATEONLY,
-    allowNull: false,
-  },
-  time: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  }
-  // Sequelize will automatically add "createdAt" and "updatedAt"
-}, {
-  timestamps: true
-});
-
-// Behaviors Model
-const Behavior = sequelize.define('Behavior', {
-  text: {
-    type: DataTypes.TEXT,
-    allowNull: false,
-  },
-  date: {
-    type: DataTypes.DATEONLY,
-    allowNull: false,
-  },
-  category: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  }
-}, {
-  timestamps: true
-});
-
-// Progress Model
-const Progress = sequelize.define('Progress', {
-  social: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  language: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  motor: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  }
-}, {
-  timestamps: true
-});
-
-// Recommendations Model
-const Recommendation = sequelize.define('Recommendation', {
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: false,
-  },
-  specialist: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  status: {
-    type: DataTypes.ENUM('new', 'in_progress', 'completed'),
-    defaultValue: 'new'
-  },
-  date: {
-    type: DataTypes.DATEONLY,
-    allowNull: false,
-  }
-}, {
-  timestamps: true
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 });
 
 ////////////////////////////////////
-//  4) Express App Setup
+//  2) Express App Setup
 ////////////////////////////////////
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 ////////////////////////////////////
-//  5) API Routes
+//  3) Routes
 ////////////////////////////////////
 
-// A) Appointments Routes
+// A) Appointments
 app.post('/api/appointments', async (req, res) => {
+  const { specialistId, date, time } = req.body;
   try {
-    const { specialistId, date, time } = req.body;
-    const newAppointment = await Appointment.create({ specialistId, date, time });
-    res.status(201).json(newAppointment);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const [result] = await pool.query(
+      'INSERT INTO appointments (specialistId, date, time) VALUES (?, ?, ?)',
+      [specialistId, date, time]
+    );
+    res.status(201).json({ id: result.insertId, specialistId, date, time });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
 app.get('/api/appointments', async (req, res) => {
   try {
-    const appointments = await Appointment.findAll();
-    res.json(appointments);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const [rows] = await pool.query('SELECT * FROM appointments');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// B) Behaviors Routes
+// B) Behaviors
 app.post('/api/behaviors', async (req, res) => {
+  const { text, date, category } = req.body;
   try {
-    const { text, date, category } = req.body;
-    const newBehavior = await Behavior.create({ text, date, category });
-    res.status(201).json(newBehavior);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const [result] = await pool.query(
+      'INSERT INTO behaviors (text, date, category) VALUES (?, ?, ?)',
+      [text, date, category]
+    );
+    res.status(201).json({ id: result.insertId, text, date, category });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
 app.get('/api/behaviors', async (req, res) => {
   try {
-    const behaviors = await Behavior.findAll();
-    res.json(behaviors);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const [rows] = await pool.query('SELECT * FROM behaviors');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// C) Progress Routes
+// C) Progress
 app.post('/api/progress', async (req, res) => {
+  const { social, language, motor } = req.body;
   try {
-    const { social, language, motor } = req.body;
-    const newProgress = await Progress.create({ social, language, motor });
-    res.status(201).json(newProgress);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const [result] = await pool.query(
+      'INSERT INTO progress (social, language, motor) VALUES (?, ?, ?)',
+      [social, language, motor]
+    );
+    res.status(201).json({ id: result.insertId, social, language, motor });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
 app.get('/api/progress', async (req, res) => {
   try {
-    const progressData = await Progress.findAll();
-    res.json(progressData);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const [rows] = await pool.query('SELECT * FROM progress');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// D) Recommendations Routes
+// D) Recommendations
 app.post('/api/recommendations', async (req, res) => {
+  const { title, description, specialist, status, date } = req.body;
   try {
-    const { title, description, specialist, status, date } = req.body;
-    const newRecommendation = await Recommendation.create({ title, description, specialist, status, date });
-    res.status(201).json(newRecommendation);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const [result] = await pool.query(
+      'INSERT INTO recommendations (title, description, specialist, status, date) VALUES (?, ?, ?, ?, ?)',
+      [title, description, specialist, status || 'new', date]
+    );
+    res.status(201).json({ id: result.insertId, title, description, specialist, status, date });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
 app.get('/api/recommendations', async (req, res) => {
   try {
-    const recommendations = await Recommendation.findAll();
-    res.json(recommendations);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const [rows] = await pool.query('SELECT * FROM recommendations');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// E) Unified Dashboard Data
+app.get('/api/dashboard', async (req, res) => {
+  try {
+    const [appointments] = await pool.query('SELECT * FROM appointments');
+    const [behaviors] = await pool.query('SELECT * FROM behaviors');
+    const [progress] = await pool.query('SELECT * FROM progress');
+    const [recommendations] = await pool.query('SELECT * FROM recommendations');
+
+    res.json({ appointments, behaviors, progress, recommendations });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
 ////////////////////////////////////
-//  6) Sync DB & Start Server
+//  4) Start Server
 ////////////////////////////////////
 const PORT = process.env.PORT || 5000;
-sequelize.sync({ alter: true })
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`\n[OK] Database synced & server running on port ${PORT}\n`);
-    });
-  })
-  .catch(err => console.error('Unable to connect to the database:', err));
+app.listen(PORT, () => {
+  console.log(`\n[OK] Server is running on port ${PORT}\n`);
+});

@@ -11,6 +11,13 @@ export function ChildProgress({ child }) {
   return (
     <div className="bg-white rounded-xl shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-4">Aperçu des Progrès</h3>
+      {child.name && (
+        <div className="mb-4 pb-4 border-b border-gray-100">
+          <h4 className="text-sm font-medium text-gray-500">Enfant</h4>
+          <p className="text-lg font-medium">{child.name}</p>
+          {child.age && <p className="text-sm text-gray-500">{child.age} ans</p>}
+        </div>
+      )}
       <div className="space-y-4">
         {progressItems.map((item) => (
           <div key={item.label} className="flex items-center gap-4">

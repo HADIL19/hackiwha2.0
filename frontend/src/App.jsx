@@ -12,9 +12,8 @@ import { BehaviorTracker } from './components/BehaviorTracker';
 import { TherapyVideos } from './components/TherapyVideos';
 import { ChildReport } from './components/ChildReport';
 import { TherapyGoals } from './components/TherapyGoals';
+import { Dashboard } from './components/Dashboard'; // ✅ Import the Dashboard
 
-
-// Sample notifications for demonstration
 const mockNotifications = [
   {
     id: '1',
@@ -44,7 +43,6 @@ const mockNotifications = [
 
 function App() {
   const handleMarkAsRead = (notificationId) => {
-    // In a real app, this would update the notification in the database
     console.log(`Notification ${notificationId} marked as read`);
   };
 
@@ -63,8 +61,8 @@ function App() {
 
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <Routes>
-            {/* Add redirect from root to dashboard */}
             <Route path="/" element={<Navigate to="/parent/dashboard" replace />} />
+            <Route path="/parent/dashboard" element={<Dashboard />} /> {/* ✅ Dashboard Route */}
             <Route path="/parent/appointments" element={<AppointmentScheduler />} />
             <Route path="/parent/observations" element={<ObservationForm />} />
             <Route path="/parent/messages" element={<QuestionForm />} />
@@ -81,7 +79,6 @@ function App() {
             <Route path="/parent/therapy-videos" element={<TherapyVideos />} />
             <Route path="/parent/report" element={<ChildReport />} />
             <Route path="/parent/goals" element={<TherapyGoals />} />
-            {/* Add catch-all route for 404 */}
             <Route path="*" element={<Navigate to="/parent/dashboard" replace />} />
           </Routes>
         </main>
