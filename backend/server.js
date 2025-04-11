@@ -135,6 +135,66 @@ app.get('/api/dashboard', async (req, res) => {
   }
 });
 
+// F) Questions
+app.post('/api/questions', async (req, res) => {
+  const { question, category } = req.body;
+  try {
+    const [result] = await pool.execute(
+      'INSERT INTO questions (question, category) VALUES (?, ?)',
+      [question, category]
+    );
+    res.status(201).json({ id: result.insertId, question, category });
+  } catch (error) {
+    console.error('Error inserting question:', error.message);
+    res.status(500).json({ error: 'Database insert failed' });
+  }
+});
+
+app.get('/api/questions', async (req, res) => {
+  try {
+    const [rows] = await pool.execute('SELECT * FROM questions ORDER BY created_at DESC');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching questions:', error.message);
+    res.status(500).json({ error: 'Failed to fetch questions' });
+  }
+});
+// Wellbeing
+app.post('/api/wellbeing', async (req, res) => {
+    const { stress } = req.body;
+    try {
+      const [result] = await pool.execute('INSERT INTO wellbeing (stress) VALUES (?)', [stress]);
+      res.status(201).json({ id: result.insertId });
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to save wellbeing' });
+    }
+  });
+  
+  // Goals
+  app.post('/api/goals', async (req, res) => {
+    const { text, done } = req.body;
+    try {
+      const [result] = await pool.execute(
+        'INSERT INTO goals (text, done) VALUES (?, ?)',
+        [text, done || false]
+      );
+      res.status(201).json({ id: result.insertId });
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to save goal' });
+    }
+  });
+  
+  // Emotional Journal
+  app.post('/api/emotions', async (req, res) => {
+    const { entry } = req.body;
+    try {
+      const [result] = await pool.execute('INSERT INTO emotions (entry) VALUES (?)', [entry]);
+      res.status(201).json({ id: result.insertId });
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to save journal entry' });
+    }
+  });
+  
 ////////////////////////////////////
 //  4) Start Server
 ////////////////////////////////////

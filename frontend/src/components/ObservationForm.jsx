@@ -1,19 +1,29 @@
 import React, { useState } from 'react';
 import { FileText, Upload, Send } from 'lucide-react';
-
+import { observationsApi } from '../services/api';
 export function ObservationForm() {
   const [observation, setObservation] = useState('');
   const [files, setFiles] = useState([]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log({ observation, files });
-    // Handle form submission
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
   };
 
-  const handleFileChange = (e) => {
-    setFiles(Array.from(e.target.files));
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      await observationsApi.create(observation, files);
+      alert('Observation submitted successfully');
+      setObservation('');
+      setFiles([]);
+    } catch (err) {
+      alert('Failed to submit observation');
+      console.error(err);
+    }
   };
+  
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6">

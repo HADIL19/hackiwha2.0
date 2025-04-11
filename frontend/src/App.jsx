@@ -5,14 +5,10 @@ import { NotificationPanel } from './components/NotificationPanel';
 import { AppointmentScheduler } from './components/AppointmentScheduler';
 import { ObservationForm } from './components/ObservationForm';
 import { QuestionForm } from './components/QuestionForm';
-import { ContentUpload } from './components/ContentUpload';
-import { EmotionalJournal } from './components/EmotionalJournal';
-import { WellbeingAssessment } from './components/WellbeingAssessment';
 import { BehaviorTracker } from './components/BehaviorTracker';
 import { TherapyVideos } from './components/TherapyVideos';
-import { ChildReport } from './components/ChildReport';
-import { TherapyGoals } from './components/TherapyGoals';
 import { Dashboard } from './components/Dashboard'; // ✅ Import the Dashboard
+import { CombinedWellbeingComponent } from './components/CombinedWellbeingComponent'; // adjust path
 
 const mockNotifications = [
   {
@@ -72,13 +68,13 @@ function App() {
                 onMarkAsRead={handleMarkAsRead}
               />
             } />
-            <Route path="/parent/upload" element={<ContentUpload />} />
-            <Route path="/parent/journal" element={<EmotionalJournal />} />
-            <Route path="/parent/wellbeing" element={<WellbeingAssessment />} />
+          
+          <Route path="/parent/wellbeing" element={<CombinedWellbeingComponent />} />
+
             <Route path="/parent/behavior" element={<BehaviorTracker />} />
             <Route path="/parent/therapy-videos" element={<TherapyVideos />} />
-            <Route path="/parent/report" element={<ChildReport />} />
-            <Route path="/parent/goals" element={<TherapyGoals />} />
+            
+
             <Route path="*" element={<Navigate to="/parent/dashboard" replace />} />
           </Routes>
         </main>

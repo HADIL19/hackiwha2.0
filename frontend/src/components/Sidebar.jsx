@@ -17,19 +17,16 @@ import {
 } from 'lucide-react';
 
 const navigation = [
-  { name: 'Tableau de Bord', icon: LayoutDashboard, path: '/parent/dashboard' },
-  { name: 'Rendez-vous', icon: Calendar, path: '/parent/appointments' },
-  { name: 'Messages', icon: MessageSquare, path: '/parent/messages' },
-  { name: 'Observations', icon: FileText, path: '/parent/observations' },
-  { name: 'Notifications', icon: Bell, path: '/parent/notifications' },
-  { name: 'Upload', icon: UploadCloud, path: '/parent/upload' },
-  { name: 'Journal Émotionnel', icon: FileText, path: '/parent/journal' },
-  { name: 'Bien-être', icon: Smile, path: '/parent/wellbeing' },
-  { name: 'Comportements', icon: User, path: '/parent/behavior' },
-  { name: 'Vidéos Thérapeutiques', icon: Video, path: '/parent/therapy-videos' },
-  { name: 'Rapport', icon: BarChart, path: '/parent/report' },
-  { name: 'Objectifs', icon: Target, path: '/parent/goals' },
-];
+    { name: 'Tableau de Bord', icon: LayoutDashboard, path: '/parent/dashboard' },
+    { name: 'Rendez-vous', icon: Calendar, path: '/parent/appointments' },
+    { name: 'Messages', icon: MessageSquare, path: '/parent/messages' },
+    { name: 'Observations', icon: FileText, path: '/parent/observations' },
+    { name: 'Notifications', icon: Bell, path: '/parent/notifications' },
+    { name: 'Comportements', icon: User, path: '/parent/behavior' },
+    { name: 'Vidéos Thérapeutiques', icon: Video, path: '/parent/therapy-videos' },
+    { name: 'Bien-être & Thérapie', icon: Smile, path: '/parent/wellbeing' }, // ✅ New item
+  ];
+  
 
 export function Sidebar() {
   const location = useLocation();

@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { MessageSquare, Send } from 'lucide-react';
+import { questionsApi } from "../services/api";
+
 
 export function QuestionForm() {
   const [question, setQuestion] = useState('');
   const [category, setCategory] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const categories = [
     'Behavior',
@@ -14,10 +18,22 @@ export function QuestionForm() {
     'Other'
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ question, category });
-    // Handle form submission
+    if (!question || !category) return alert("Please fill in both fields.");
+    
+    setLoading(true);
+    try {
+      await questionsApi.create({ question, category });
+      setSuccess(true);
+      setQuestion('');
+      setCategory('');
+    } catch (error) {
+      console.error('Submission failed:', error);
+      alert("Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -54,11 +70,16 @@ export function QuestionForm() {
 
         <button
           type="submit"
+          disabled={loading}
           className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
         >
           <Send className="w-4 h-4" />
-          Submit Question
+          {loading ? 'Submitting...' : 'Submit Question'}
         </button>
+
+        {success && (
+          <p className="text-green-600 text-sm mt-2">Question submitted successfully!</p>
+        )}
       </form>
     </div>
   );

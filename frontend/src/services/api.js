@@ -134,3 +134,12 @@ export const uploadApi = {
       headers: {}, // Let browser set content type for FormData
     }),
 };
+export const questionsApi = {
+  getAll: () => fetchApi('questions'),
+  create: (data) =>
+    fetchApi('questions', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+};
+
