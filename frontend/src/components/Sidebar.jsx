@@ -73,10 +73,7 @@ export function Sidebar() {
           </div>
         </div>
         <div className="flex gap-2">
-          <button className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-gray-700 hover:bg-gray-50 w-full">
-            <Settings className="w-4 h-4" />
-            <span>Paramètres</span>
-          </button>
+          
           <button className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-red-600 hover:bg-red-50 w-full">
             <LogOut className="w-4 h-4" />
             <span>Déconnexion</span>
